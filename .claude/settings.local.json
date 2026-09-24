@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/ --max-time 5)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5175/ --max-time 2)",
+      "Bash(break)",
+      "Read(//tmp/**)",
+      "Bash(npm run *)",
+      "Bash(disown)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5176/ --max-time 2)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5177/ --max-time 2)"
+    ]
+  }
+}
