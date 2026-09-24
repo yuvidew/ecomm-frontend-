@@ -40,9 +40,35 @@ Then run the `test-runner` agent once more on the same scope.
 
 Do this only once. Don't loop.
 
-## 5. Report to the user
+## 5. Write the report and summarize
 
-Give a short summary:
+Write a report file to `.claude/test-reports/<feature>-<YYYY-MM-DD>.md` (today's date;
+create the `.claude/test-reports/` folder if it doesn't exist yet), with these sections:
+
+```markdown
+# Test report: <feature>
+
+Date: <YYYY-MM-DD>
+Plan: <plan file path from step 1>
+
+## Files added/changed
+(from test-writer)
+
+## Results
+Passed / failed / skipped counts, and whether the type-check was clean.
+
+## Implementation bugs
+Each one with the spec source, expected vs. actual, and the file:line in the
+implementation.
+
+## Spec ambiguities / open questions
+Anything that needs the user's decision.
+
+## Environment issues
+Any, if present.
+```
+
+Then give the same summary to the user in chat, plus the report file path:
 - **Files added/changed** (from test-writer)
 - **Results:** passed / failed / skipped counts, and whether the type-check was clean
 - **Implementation bugs:** each one with the spec source, expected vs. actual, and the file:line
@@ -50,3 +76,4 @@ Give a short summary:
   fixed.
 - **Spec ambiguities / open questions** that need the user's decision
 - **Environment issues**, if any
+- **Report saved to:** the `.claude/test-reports/...` path written above
