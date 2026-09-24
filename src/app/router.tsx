@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { RedirectIfRole } from '@/components/redirect-if-role'
 import AdminCategoriesPage from '@/pages/admin-categories-page'
 import AdminProductDetailPage from '@/pages/admin-product-detail-page'
 import AdminProductsPage from '@/pages/admin-products-page'
@@ -15,7 +16,12 @@ import { RootLayout } from './root-layout'
  */
 export const router = createBrowserRouter([
   {
-    element: <RootLayout />,
+    // storefront is customer/anonymous-only -- a signed-in admin is sent to /admin
+    element: (
+      <RedirectIfRole role="admin" to="/admin">
+        <RootLayout />
+      </RedirectIfRole>
+    ),
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/sign-in', element: <SignInPage /> },
