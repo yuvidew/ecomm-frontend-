@@ -1,4 +1,7 @@
 import { QueryClient } from '@tanstack/react-query'
+import { persistAuthSession } from './auth-storage'
+import { authKeys } from './query-keys'
+import type { AuthSession } from '@/types/auth'
 
 /**
  * queryClient — single shared TanStack Query client for the app.
@@ -12,4 +15,13 @@ export const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
     },
   },
+})
+
+// keeps localStorage in sync with the session cache -- covers sign-in, the
+// bootstrap refresh, the 401 silent refresh, and logout in one place, since
+// they all write through this same query cache entry
+queryClient.getQueryCache().subscribe((event) => {
+  if (event.type === 'updated' && event.query.queryKey.join('.') === authKeys.session.join('.')) {
+    persistAuthSession((event.query.state.data as AuthSession | null | undefined) ?? null)
+  }
 })
