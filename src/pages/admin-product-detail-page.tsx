@@ -1,10 +1,11 @@
-import { Link, useParams } from 'react-router'
+import { useParams } from 'react-router'
 import { PencilIcon } from 'lucide-react'
 import { QueryErrorAlert } from '@/components/query-error-alert'
 import { SiteHeader } from '@/components/site-header'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { DeleteProductDialog } from '@/features/products/_components/delete-product-dialog'
+import { ProductFormDialog } from '@/features/products/_components/product-form-dialog'
 import { ProductDetails } from '@/features/products/_components/product-details'
 import { useProduct } from '@/features/products/hooks/use-product'
 import { getApiErrorMessage } from '@/lib/http'
@@ -25,12 +26,15 @@ const AdminProductDetailPage = () => {
         actions={
           product && (
             <>
-              <Button asChild variant="outline" size="sm">
-                <Link to={`/admin/products/${product.id}/edit`}>
-                  <PencilIcon />
-                  Edit
-                </Link>
-              </Button>
+              <ProductFormDialog
+                product={product}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    <PencilIcon />
+                    Edit
+                  </Button>
+                }
+              />
               <DeleteProductDialog product={product} />
             </>
           )

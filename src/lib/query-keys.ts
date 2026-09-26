@@ -11,7 +11,8 @@ export const authKeys = {
 export const productKeys = {
   all: ['products'] as const,
   lists: () => [...productKeys.all, 'list'] as const,
-  list: (params: { page: number; limit: number }) => [...productKeys.lists(), params] as const,
+  list: (params: { page: number; limit: number; categoryId?: number; search?: string }) =>
+    [...productKeys.lists(), params] as const,
   detail: (id: number) => [...productKeys.all, 'detail', id] as const,
 }
 

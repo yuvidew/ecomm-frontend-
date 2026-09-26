@@ -21,9 +21,9 @@ export const readStoredSession = (): AuthSession | null => {
 
 /**
  * persistAuthSession — write-through mirror of the auth session query cache
- * into localStorage. Storage can throw in private mode / blocked storage
- * (same as `theme-provider.tsx`'s `readStoredTheme`); failures are swallowed
- * since the in-memory session still works for this tab either way.
+ * into localStorage. Storage can throw in private mode / blocked storage;
+ * failures are swallowed since the in-memory session still works for this
+ * tab either way.
  * @param session - current session, or `null` when signed out
  */
 export const persistAuthSession = (session: AuthSession | null) => {

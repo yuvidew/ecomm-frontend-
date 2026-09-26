@@ -5,26 +5,13 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { useSession } from '@/features/auth/hooks/use-session'
 import { CategoryGrid } from '@/features/categories/_components/category-grid'
 import { FeatureItem } from '@/features/home/_components/feature-item'
-import { ProductTile } from '@/features/home/_components/product-tile'
 import PromoBanner from '@/features/home/_components/promo-banner'
-import type { DummyProduct, Feature, TrustStat } from '@/features/home/types/home'
+import type { Feature, TrustStat } from '@/features/home/types/home'
+import { TrendingProducts } from '@/features/products/_components/trending-products'
 
 // hosted on Appwrite storage — the hero's background product photo
 const HERO_IMAGE_URL =
   'https://fra.cloud.appwrite.io/v1/storage/buckets/6ab3749700041e900e41/files/6ab4d75d002d339bbffc/view?project=6ab374240038d71f92db'
-
-// placeholder catalog for this UI-first phase — will be replaced by
-// useProducts()/useCategories() once the backend has real rows to show
-const DUMMY_TRENDING_PRODUCTS: DummyProduct[] = [
-  { id: 1, name: 'Urban Backpack', price: 4899, originalPrice: 6499, rating: 4.5, reviews: 128, badge: 'Sale' },
-  { id: 2, name: 'Minimal White Sneakers', price: 6499, rating: 4.2, reviews: 96 },
-  { id: 3, name: 'Classic Brown Watch', price: 10599, rating: 4.7, reviews: 64, badge: 'New' },
-  { id: 4, name: 'Polarized Sunglasses', price: 4099, rating: 4.3, reviews: 82 },
-  { id: 5, name: 'Hydrating Face Serum', price: 1999, originalPrice: 2799, rating: 4.1, reviews: 45, badge: 'Sale' },
-  { id: 6, name: 'Everyday Tote Bag', price: 3299, rating: 4.6, reviews: 58 },
-  { id: 7, name: 'Wireless Earbuds', price: 5499, rating: 4.4, reviews: 210, badge: 'New' },
-  { id: 8, name: 'Ceramic Table Lamp', price: 2899, rating: 4.0, reviews: 37 },
-]
 
 const FEATURES: Feature[] = [
   { icon: TruckIcon, label: 'Free Shipping', description: 'On orders over ₹999' },
@@ -43,9 +30,8 @@ const TRUST_STATS: TrustStat[] = [
 /**
  * HomePage — landing route ("/"). Storefront marketing page: hero, feature
  * highlights, category grid, promo banner, trending products, and trust
- * stats. Categories are real data via `CategoryGrid`; trending products are
- * still placeholder data for this UI-first phase — see
- * DUMMY_TRENDING_PRODUCTS above.
+ * stats. Categories and trending products are both real data, via
+ * `CategoryGrid` and `TrendingProducts` respectively.
  */
 const HomePage = () => {
   const { session } = useSession()
@@ -77,7 +63,7 @@ const HomePage = () => {
                     <Link to="/admin">Go to admin dashboard</Link>
                   </Button>
                 ) : (
-                  <p className="text-sm text-muted-foreground">Signed in as {session.user.email}.</p>
+                  <></>
                 )
               ) : (
                 <>
@@ -122,15 +108,16 @@ const HomePage = () => {
       <PromoBanner />
 
       <section id="trending-products" className="mx-auto w-full max-w-7xl px-6 py-16 lg:px-6">
-        <div className="mb-8">
-          <h2 className="font-heading text-3xl font-semibold text-foreground">Trending Products</h2>
-          <p className="mt-1 text-muted-foreground">Our customers&apos; current favorites.</p>
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <h2 className="font-heading text-3xl font-semibold text-foreground">Trending Products</h2>
+            <p className="mt-1 text-muted-foreground">Our customers&apos; current favorites.</p>
+          </div>
+          <Link to="/shop" className="text-sm font-medium text-primary hover:underline">
+            View more
+          </Link>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {DUMMY_TRENDING_PRODUCTS.map((product) => (
-            <ProductTile key={product.id} product={product} />
-          ))}
-        </div>
+        <TrendingProducts />
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-6 py-12 lg:px-2">

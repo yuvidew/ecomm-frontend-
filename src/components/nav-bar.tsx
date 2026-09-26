@@ -1,6 +1,5 @@
 import { Link } from 'react-router'
-import { ImageIcon, StoreIcon } from 'lucide-react'
-import { ModeToggle } from '@/components/mode-toggle'
+import { ImageIcon, SearchIcon, ShoppingBagIcon, StoreIcon, UserIcon } from 'lucide-react'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,7 +12,6 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSession } from '@/features/auth/hooks/use-session'
-import { useLogout } from '@/features/auth/hooks/use-logout'
 import { useCategories } from '@/features/categories/hooks/use-categories'
 
 /**
@@ -23,7 +21,6 @@ import { useCategories } from '@/features/categories/hooks/use-categories'
  */
 export const NavBar = () => {
   const { session } = useSession()
-  const { mutate: logout, isPending } = useLogout()
   // same-page anchor links only — no public category-browsing route exists yet
   const { data: categories, isLoading } = useCategories()
 
@@ -45,12 +42,12 @@ export const NavBar = () => {
           >
             Home
           </Link>
-          <a
-            href="#trending-products"
+          <Link
+            to="/shop"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Shop
-          </a>
+          </Link>
           <NavigationMenu viewport={false}>
             <NavigationMenuList>
               <NavigationMenuItem>
@@ -103,7 +100,7 @@ export const NavBar = () => {
           </NavigationMenu>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center ">
           {session ? (
             <>
               {session.user.role === 'admin' && (
@@ -111,11 +108,14 @@ export const NavBar = () => {
                   <Link to="/admin">Admin</Link>
                 </Button>
               )}
-              <span className="hidden max-w-40 truncate text-sm text-muted-foreground sm:inline">
-                {session.user.email}
-              </span>
-              <Button variant="outline" size="sm" disabled={isPending} onClick={() => logout()}>
-                Log out
+              <Button variant={"ghost"} className='bg-transparent! p-0' size={"icon"}>
+                <SearchIcon/>
+              </Button>
+              <Button variant={"ghost"} className='bg-transparent! p-0' size={"icon"} >
+                <UserIcon/>
+              </Button>
+              <Button variant={"ghost"} className='bg-transparent! p-0' size={"icon"} >
+                <ShoppingBagIcon/>
               </Button>
             </>
           ) : (
@@ -128,7 +128,6 @@ export const NavBar = () => {
               </Button>
             </>
           )}
-          <ModeToggle />
         </div>
       </div>
     </header>

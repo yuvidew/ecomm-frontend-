@@ -28,6 +28,8 @@ export type Pagination = {
 export type ListProductsParams = {
   page: number
   limit: number
+  categoryId?: number
+  search?: string
 }
 
 /** ListProductsResponse — body returned by GET /api/products. */

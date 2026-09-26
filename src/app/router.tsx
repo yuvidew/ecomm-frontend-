@@ -4,7 +4,7 @@ import AdminCategoriesPage from '@/pages/admin-categories-page'
 import AdminProductDetailPage from '@/pages/admin-product-detail-page'
 import AdminProductsPage from '@/pages/admin-products-page'
 import HomePage from '@/pages/home-page'
-import ProductFormPage from '@/pages/product-form-page'
+import ShopPage from '@/pages/shop-page'
 import SignInPage from '@/pages/sign-in-page'
 import SignUpPage from '@/pages/sign-up-page'
 import { AdminLayout } from './admin-layout'
@@ -24,6 +24,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: '/', element: <HomePage /> },
+      { path: '/shop', element: <ShopPage /> },
       { path: '/sign-in', element: <SignInPage /> },
       { path: '/sign-up', element: <SignUpPage /> },
     ],
@@ -34,9 +35,7 @@ export const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <AdminProductsPage /> },
-      { path: 'products/new', element: <ProductFormPage /> },
       { path: 'products/:id', element: <AdminProductDetailPage /> },
-      { path: 'products/:id/edit', element: <ProductFormPage /> },
       { path: 'categories', element: <AdminCategoriesPage /> },
     ],
   },

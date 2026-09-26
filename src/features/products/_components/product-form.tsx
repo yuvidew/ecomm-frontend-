@@ -1,8 +1,7 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -18,11 +17,20 @@ import { ImageUploader } from './image-uploader'
 
 /**
  * ProductForm — create/edit form for a product. Without `product` it creates
- * a new one; with `product` it's prefilled and saves changes. Navigates to
- * the product's detail page on success.
+ * a new one; with `product` it's prefilled and saves changes.
  * @param product - existing product to edit; omit to create
+ * @param onSuccess - called with the saved product after a successful create/update
+ * @param onCancel - called when the Cancel button is clicked
  */
-export const ProductForm = ({ product }: { product?: Product }) => {
+export const ProductForm = ({
+  product,
+  onSuccess,
+  onCancel,
+}: {
+  product?: Product
+  onSuccess: (saved: Product) => void
+  onCancel: () => void
+}) => {
   const isEdit = product !== undefined
   const [name, setName] = useState(product?.name ?? '')
   const [categoryId, setCategoryId] = useState(product ? String(product.category_id) : '')
@@ -36,7 +44,6 @@ export const ProductForm = ({ product }: { product?: Product }) => {
   const { data: categories, isLoading: categoriesLoading } = useCategories()
   const createMutation = useCreateProduct()
   const updateMutation = useUpdateProduct()
-  const navigate = useNavigate()
 
   const { isPending, isError, error } = isEdit ? updateMutation : createMutation
   const fieldErrors = getApiFieldErrors<ProductFieldName>(error)
@@ -62,145 +69,141 @@ export const ProductForm = ({ product }: { product?: Product }) => {
       // always the full list: the backend replaces every image when `images` is sent
       images,
     }
-    const onSuccess = (saved: Product) => {
+    const handleSaved = (saved: Product) => {
       toast.success(isEdit ? 'Product updated' : 'Product created')
-      navigate(`/admin/products/${saved.id}`, { replace: isEdit })
+      onSuccess(saved)
     }
 
     if (isEdit) {
-      updateMutation.mutate({ id: product.id, input }, { onSuccess })
+      updateMutation.mutate({ id: product.id, input }, { onSuccess: handleSaved })
     } else {
-      createMutation.mutate(input, { onSuccess })
+      createMutation.mutate(input, { onSuccess: handleSaved })
     }
   }
 
   return (
-    <Card className="max-w-3xl">
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <FieldGroup>
-            <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium text-foreground">Basic info</span>
-              <Separator />
-            </div>
-            <Field data-invalid={!!fieldErrors?.name}>
-              <FieldLabel htmlFor="product-name">Name</FieldLabel>
-              <Input
-                id="product-name"
-                required
-                minLength={2}
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-              />
-              <FieldError errors={errorsFor('name')} />
-            </Field>
+    <form onSubmit={handleSubmit}>
+      <FieldGroup>
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-foreground">Basic info</span>
+          <Separator />
+        </div>
+        <Field data-invalid={!!fieldErrors?.name}>
+          <FieldLabel htmlFor="product-name">Name</FieldLabel>
+          <Input
+            id="product-name"
+            required
+            minLength={2}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <FieldError errors={errorsFor('name')} />
+        </Field>
 
-            <Field data-invalid={categoryMissing || !!fieldErrors?.categoryId}>
-              <FieldLabel htmlFor="product-category">Category</FieldLabel>
-              <Select value={categoryId} onValueChange={setCategoryId} disabled={categoriesLoading}>
-                <SelectTrigger id="product-category" className="w-full">
-                  <SelectValue placeholder={categoriesLoading ? 'Loading categories…' : 'Select a category'} />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories?.map((category) => (
-                    <SelectItem key={category.id} value={String(category.id)}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {!categoriesLoading && !categories?.length && (
-                <FieldDescription>
-                  No categories yet —{' '}
-                  <Link to="/admin/categories" className="underline underline-offset-4">
-                    create one first
-                  </Link>
-                  .
-                </FieldDescription>
-              )}
-              {categoryMissing && <FieldError>Select a category.</FieldError>}
-              <FieldError errors={errorsFor('categoryId')} />
-            </Field>
+        <Field data-invalid={categoryMissing || !!fieldErrors?.categoryId}>
+          <FieldLabel htmlFor="product-category">Category</FieldLabel>
+          <Select value={categoryId} onValueChange={setCategoryId} disabled={categoriesLoading}>
+            <SelectTrigger id="product-category" className="w-full">
+              <SelectValue placeholder={categoriesLoading ? 'Loading categories…' : 'Select a category'} />
+            </SelectTrigger>
+            <SelectContent>
+              {categories?.map((category) => (
+                <SelectItem key={category.id} value={String(category.id)}>
+                  {category.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {!categoriesLoading && !categories?.length && (
+            <FieldDescription>
+              No categories yet —{' '}
+              <Link to="/admin/categories" className="underline underline-offset-4">
+                create one first
+              </Link>
+              .
+            </FieldDescription>
+          )}
+          {categoryMissing && <FieldError>Select a category.</FieldError>}
+          <FieldError errors={errorsFor('categoryId')} />
+        </Field>
 
-            <div className="flex flex-col gap-1 pt-2">
-              <span className="text-sm font-medium text-foreground">Pricing &amp; inventory</span>
-              <Separator />
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2">
-              <Field data-invalid={!!fieldErrors?.price}>
-                <FieldLabel htmlFor="product-price">Price</FieldLabel>
-                <Input
-                  id="product-price"
-                  type="number"
-                  inputMode="decimal"
-                  required
-                  min={0.01}
-                  step={0.01}
-                  value={price}
-                  onChange={(event) => setPrice(event.target.value)}
-                />
-                <FieldError errors={errorsFor('price')} />
-              </Field>
-              <Field data-invalid={!!fieldErrors?.stock}>
-                <FieldLabel htmlFor="product-stock">Stock</FieldLabel>
-                <Input
-                  id="product-stock"
-                  type="number"
-                  inputMode="numeric"
-                  required
-                  min={0}
-                  step={1}
-                  value={stock}
-                  onChange={(event) => setStock(event.target.value)}
-                />
-                <FieldError errors={errorsFor('stock')} />
-              </Field>
-            </div>
+        <div className="flex flex-col gap-1 pt-2">
+          <span className="text-sm font-medium text-foreground">Pricing &amp; inventory</span>
+          <Separator />
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <Field data-invalid={!!fieldErrors?.price}>
+            <FieldLabel htmlFor="product-price">Price</FieldLabel>
+            <Input
+              id="product-price"
+              type="number"
+              inputMode="decimal"
+              required
+              min={0.01}
+              step={0.01}
+              value={price}
+              onChange={(event) => setPrice(event.target.value)}
+            />
+            <FieldError errors={errorsFor('price')} />
+          </Field>
+          <Field data-invalid={!!fieldErrors?.stock}>
+            <FieldLabel htmlFor="product-stock">Stock</FieldLabel>
+            <Input
+              id="product-stock"
+              type="number"
+              inputMode="numeric"
+              required
+              min={0}
+              step={1}
+              value={stock}
+              onChange={(event) => setStock(event.target.value)}
+            />
+            <FieldError errors={errorsFor('stock')} />
+          </Field>
+        </div>
 
-            <div className="flex flex-col gap-1 pt-2">
-              <span className="text-sm font-medium text-foreground">Media</span>
-              <Separator />
-            </div>
-            <Field data-invalid={!!fieldErrors?.images}>
-              <FieldLabel htmlFor="product-images">Images</FieldLabel>
-              <ImageUploader
-                id="product-images"
-                value={images}
-                onChange={setImages}
-                onUploadingChange={setIsUploading}
-              />
-              <FieldError errors={errorsFor('images')} />
-            </Field>
+        <div className="flex flex-col gap-1 pt-2">
+          <span className="text-sm font-medium text-foreground">Media</span>
+          <Separator />
+        </div>
+        <Field data-invalid={!!fieldErrors?.images}>
+          <FieldLabel htmlFor="product-images">Images</FieldLabel>
+          <ImageUploader
+            id="product-images"
+            value={images}
+            onChange={setImages}
+            onUploadingChange={setIsUploading}
+          />
+          <FieldError errors={errorsFor('images')} />
+        </Field>
 
-            <div className="flex flex-col gap-1 pt-2">
-              <span className="text-sm font-medium text-foreground">Description</span>
-              <Separator />
-            </div>
-            <Field data-invalid={!!fieldErrors?.description}>
-              <FieldLabel htmlFor="product-description">Details</FieldLabel>
-              <Textarea
-                id="product-description"
-                rows={5}
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-              />
-              <FieldError errors={errorsFor('description')} />
-            </Field>
+        <div className="flex flex-col gap-1 pt-2">
+          <span className="text-sm font-medium text-foreground">Description</span>
+          <Separator />
+        </div>
+        <Field data-invalid={!!fieldErrors?.description}>
+          <FieldLabel htmlFor="product-description">Details</FieldLabel>
+          <Textarea
+            id="product-description"
+            rows={5}
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+          <FieldError errors={errorsFor('description')} />
+        </Field>
 
-            {isError && !fieldErrors && <FieldError>{getApiErrorMessage(error)}</FieldError>}
+        {isError && !fieldErrors && <FieldError>{getApiErrorMessage(error)}</FieldError>}
 
-            <div className="flex justify-end gap-3">
-              <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isPending}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isPending || isUploading}>
-                {isPending && <Spinner />}
-                {isEdit ? 'Save changes' : 'Create product'}
-              </Button>
-            </div>
-          </FieldGroup>
-        </form>
-      </CardContent>
-    </Card>
+        <div className="flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isPending || isUploading}>
+            {isPending && <Spinner />}
+            {isEdit ? 'Save changes' : 'Create product'}
+          </Button>
+        </div>
+      </FieldGroup>
+    </form>
   )
 }

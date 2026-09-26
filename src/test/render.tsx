@@ -1,8 +1,7 @@
 import type { ReactElement, ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render } from '@testing-library/react'
-import { MemoryRouter } from 'react-router'
-import { ThemeProvider } from '@/components/theme-provider'
+import { MemoryRouter, useLocation } from 'react-router'
 import { Toaster } from '@/components/ui/sonner'
 
 /**
@@ -26,12 +25,10 @@ export const createTestQueryClient = () =>
  */
 export const createProvidersWrapper = (queryClient: QueryClient, route = '/') => {
   const Wrapper = ({ children }: { children: ReactNode }) => (
-    <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
         <Toaster />
       </QueryClientProvider>
-    </ThemeProvider>
   )
   return Wrapper
 }
@@ -51,4 +48,14 @@ export const renderWithProviders = (
   const client = options.queryClient ?? createTestQueryClient()
   const result = render(ui, { wrapper: createProvidersWrapper(client, options.route) })
   return { ...result, queryClient: client }
+}
+
+/**
+ * SearchParamsProbe — renders the current URL's search string so tests can
+ * assert on `?category=`/`?search=`/`?page=` etc. changes driven by
+ * components under test that write via `useSearchParams`.
+ */
+export const SearchParamsProbe = () => {
+  const location = useLocation()
+  return <div data-testid="search-params-probe">{location.search}</div>
 }
