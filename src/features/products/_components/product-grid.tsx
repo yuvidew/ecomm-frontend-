@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { useSearchParams } from 'react-router'
 import { PackageIcon, PlusIcon } from 'lucide-react'
 import { QueryErrorAlert } from '@/components/query-error-alert'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,7 @@ import { getApiErrorMessage } from '@/lib/http'
 import { cn } from '@/lib/utils'
 import { useProducts } from '../hooks/use-products'
 import { ProductCard } from './product-card'
+import { ProductFormDialog } from './product-form-dialog'
 
 // products per page on the admin grid (backend max is 100)
 const PAGE_SIZE = 12
@@ -64,12 +65,14 @@ export const ProductGrid = () => {
           <EmptyDescription>Products you create will show up here.</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button asChild size="sm">
-            <Link to="/admin/products/new">
-              <PlusIcon />
-              Create product
-            </Link>
-          </Button>
+          <ProductFormDialog
+            trigger={
+              <Button size="sm">
+                <PlusIcon />
+                Create product
+              </Button>
+            }
+          />
         </EmptyContent>
       </Empty>
     )

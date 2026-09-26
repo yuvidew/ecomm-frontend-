@@ -1,9 +1,9 @@
-import { Link } from 'react-router'
 import { PlusIcon } from 'lucide-react'
 import { SiteHeader } from '@/components/site-header'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useCategories } from '@/features/categories/hooks/use-categories'
+import { ProductFormDialog } from '@/features/products/_components/product-form-dialog'
 import { ProductGrid } from '@/features/products/_components/product-grid'
 import { useProducts } from '@/features/products/hooks/use-products'
 
@@ -21,12 +21,14 @@ const AdminProductsPage = () => {
       <SiteHeader
         title="Products"
         actions={
-          <Button asChild size="sm">
-            <Link to="/admin/products/new">
-              <PlusIcon />
-              New product
-            </Link>
-          </Button>
+          <ProductFormDialog
+            trigger={
+              <Button size="sm">
+                <PlusIcon />
+                New product
+              </Button>
+            }
+          />
         }
       />
       <main className="flex flex-col gap-6 p-4 lg:p-6">

@@ -1,6 +1,5 @@
 import { Fragment, type ReactNode } from 'react'
 import { Link } from 'react-router'
-import { ModeToggle } from '@/components/mode-toggle'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,7 +16,7 @@ export type SiteHeaderCrumb = { label: string; href?: string }
 
 /**
  * SiteHeader — sticky top bar of the admin dashboard with the current page
- * title (or a breadcrumb trail), page actions, and the light/dark toggle.
+ * title (or a breadcrumb trail) and page actions.
  * @param title - page title shown when `breadcrumb` isn't given
  * @param breadcrumb - optional trail (e.g. Products / Edit product) rendered instead of `title`
  * @param actions - optional right-aligned controls (e.g. a "New product" button)
@@ -58,10 +57,7 @@ export const SiteHeader = ({
         ) : (
           <h1 className="font-heading text-base font-medium">{title}</h1>
         )}
-        <div className="ml-auto flex items-center gap-2">
-          {actions}
-          <ModeToggle />
-        </div>
+        <div className="ml-auto flex items-center gap-2">{actions}</div>
       </div>
     </header>
   )

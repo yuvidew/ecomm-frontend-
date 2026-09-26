@@ -21,7 +21,14 @@ export const queryClient = new QueryClient({
 // bootstrap refresh, the 401 silent refresh, and logout in one place, since
 // they all write through this same query cache entry
 queryClient.getQueryCache().subscribe((event) => {
-  if (event.type === 'updated' && event.query.queryKey.join('.') === authKeys.session.join('.')) {
+  // only settled fetches -- the 'fetch' event fired when a query starts has
+  // `data` still undefined, which would otherwise wipe the localStorage
+  // fallback before bootstrapSession() gets a chance to read it back
+  if (
+    event.type === 'updated' &&
+    event.query.state.fetchStatus === 'idle' &&
+    event.query.queryKey.join('.') === authKeys.session.join('.')
+  ) {
     persistAuthSession((event.query.state.data as AuthSession | null | undefined) ?? null)
   }
 })
