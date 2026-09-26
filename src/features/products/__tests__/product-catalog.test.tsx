@@ -27,6 +27,8 @@ const makeProduct = (id: number, price = '10.00'): Product => ({
   description: null,
   price,
   stock: 5,
+  avg_rating: '0.0',
+  num_reviews: 0,
   created_at: '2024-01-01',
   updated_at: '2024-01-01',
   images: [],
