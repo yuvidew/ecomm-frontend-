@@ -34,7 +34,7 @@ const GRID_CLASSES = 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'
  * batch of up to `BATCH_LIMIT` products (server-filtered by category/search),
  * then filters that batch by price and paginates it client-side -- see
  * `.claude/plan/phase-13-shop-filters.md` for why price filtering can't be
- * done server-side.
+ * done server-side. 
  */
 export const ProductCatalog = () => {
   const [searchParams, setSearchParams] = useSearchParams()
