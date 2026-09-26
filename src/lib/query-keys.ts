@@ -21,3 +21,11 @@ export const categoryKeys = {
   all: ['categories'] as const,
   list: ['categories', 'list'] as const,
 }
+
+/** reviewKeys — TanStack Query keys for the reviews feature. */
+export const reviewKeys = {
+  all: ['reviews'] as const,
+  listsByProduct: (productId: number) => [...reviewKeys.all, 'product', productId] as const,
+  listByProduct: (productId: number, params: { page: number; limit: number }) =>
+    [...reviewKeys.listsByProduct(productId), params] as const,
+}

@@ -11,6 +11,9 @@ export type Product = {
   // MySQL DECIMAL — mysql2 serializes it as a string
   price: string
   stock: number
+  // MySQL DECIMAL — mysql2 serializes it as a string
+  avg_rating: string
+  num_reviews: number
   created_at: string
   updated_at: string
   images: string[]
