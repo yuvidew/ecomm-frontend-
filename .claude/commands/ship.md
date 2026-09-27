@@ -126,7 +126,31 @@ Follow these steps in order.
 
 ## 5. Report
 
-Show, and nothing else beyond this:
+Show:
 - The final commit message
 - The branch name
 - The PR link
+
+## 6. Merge and clean up (ask first)
+
+- Ask the user (e.g. with `AskUserQuestion`) whether to merge the PR now. Do not merge
+  without an explicit yes — this affects the shared `main` branch.
+- If they confirm, merge with the branch deleted on the remote in the same step:
+
+  ```bash
+  gh pr merge <branch-name> --squash --delete-branch
+  ```
+
+  (Use whatever merge strategy — `--squash`, `--merge`, or `--rebase` — the user prefers;
+  default to `--squash` if they don't say.)
+
+- Switch back to `main`, delete the local branch, and sync:
+
+  ```bash
+  git checkout main
+  git branch -d <branch-name>
+  git pull
+  ```
+
+- Report the final state: which branch was merged, that `main` is now checked out, and
+  that it's up to date with the remote.
