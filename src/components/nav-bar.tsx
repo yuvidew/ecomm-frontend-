@@ -1,6 +1,7 @@
-import { Link } from 'react-router'
-import { ImageIcon, SearchIcon, ShoppingBagIcon, StoreIcon, UserIcon } from 'lucide-react'
+import { Link, useLocation } from 'react-router'
+import { HeartIcon, ImageIcon, SearchIcon, ShoppingBagIcon, StoreIcon, UserIcon } from 'lucide-react'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   NavigationMenu,
@@ -10,19 +11,34 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useSession } from '@/features/auth/hooks/use-session'
+import { CartSheet } from '@/features/cart/_components/cart-sheet'
+import { useCart } from '@/features/cart/hooks/use-cart'
 import { useCategories } from '@/features/categories/hooks/use-categories'
+import { FavoritesSheet } from '@/features/favorites/_components/favorites-sheet'
+import { useFavorites } from '@/features/favorites/hooks/use-favorites'
+import { cn } from 'cn'
 
 /**
  * NavBar — sticky top-of-app navigation: announcement strip, brand mark,
- * primary nav (Home / Shop / Categories), and session-aware account actions.
+ * primary nav (Home / Shop / Categories), and session-aware account actions,
+ * including the cart and favorites Sheets (with item-count badges).
  * Wraps every public route via `RootLayout`.
  */
 export const NavBar = () => {
   const { session } = useSession()
   // same-page anchor links only — no public category-browsing route exists yet
   const { data: categories, isLoading } = useCategories()
+  // only fetched while signed in (both hooks disable themselves otherwise)
+  const { data: cart } = useCart()
+  const { favorites } = useFavorites()
+  const cartCount = cart?.items.length ?? 0
+  const favoritesCount = favorites.length
+
+  const {pathname} = useLocation();
+
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
@@ -38,20 +54,20 @@ export const NavBar = () => {
         <nav className="hidden items-center gap-6 md:flex">
           <Link
             to="/"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className={cn("text-sm font-medium  transition-colors hover:text-foreground", pathname === "/" ? "text-primary" : "text-muted-foreground")}
           >
             Home
           </Link>
           <Link
             to="/shop"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            className={cn("text-sm font-medium text-muted-foreground transition-colors hover:text-foreground", pathname === "/shop" ? "text-primary" : "text-muted-foreground")}
           >
             Shop
           </Link>
           <NavigationMenu viewport={false}>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="h-auto bg-transparent p-0 text-sm font-medium text-muted-foreground hover:bg-transparent focus:bg-transparent data-open:bg-transparent data-popup-open:bg-transparent">
+                <NavigationMenuTrigger className={cn("h-auto bg-transparent p-0 text-sm font-medium text-muted-foreground hover:bg-transparent focus:bg-transparent data-open:bg-transparent data-popup-open:bg-transparent", pathname === "/categories" ? "text-primary" : "text-muted-foreground")}>
                   Categories
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -111,12 +127,39 @@ export const NavBar = () => {
               <Button variant={"ghost"} className='bg-transparent! p-0' size={"icon"}>
                 <SearchIcon/>
               </Button>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant={"ghost"} className='relative bg-transparent! p-0' size={"icon"}>
+                    <HeartIcon/>
+                    {favoritesCount > 0 && (
+                      <Badge className="absolute top-0 -right-1 size-4 justify-center rounded-full p-0 text-[10px]">
+                        {favoritesCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full p-0 sm:max-w-sm">
+                  <FavoritesSheet />
+                </SheetContent>
+              </Sheet>
               <Button variant={"ghost"} className='bg-transparent! p-0' size={"icon"} >
                 <UserIcon/>
               </Button>
-              <Button variant={"ghost"} className='bg-transparent! p-0' size={"icon"} >
-                <ShoppingBagIcon/>
-              </Button>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant={"ghost"} className='relative bg-transparent! p-0' size={"icon"}>
+                    <ShoppingBagIcon/>
+                    {cartCount > 0 && (
+                      <Badge className="absolute top-0 -right-1 size-4 justify-center rounded-full p-0 text-[10px]">
+                        {cartCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full p-0 sm:max-w-sm">
+                  <CartSheet />
+                </SheetContent>
+              </Sheet>
             </>
           ) : (
             <>
