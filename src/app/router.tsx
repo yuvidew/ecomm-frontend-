@@ -1,9 +1,11 @@
 import { createBrowserRouter } from 'react-router'
 import { RedirectIfRole } from '@/components/redirect-if-role'
+import { RequireAuth } from '@/components/require-auth'
 import AdminCategoriesPage from '@/pages/admin-categories-page'
 import AdminProductDetailPage from '@/pages/admin-product-detail-page'
 import AdminProductsPage from '@/pages/admin-products-page'
 import HomePage from '@/pages/home-page'
+import OrdersPage from '@/pages/orders-page'
 import ProductDetailPage from '@/pages/product-detail-page'
 import ShopPage from '@/pages/shop-page'
 import SignInPage from '@/pages/sign-in-page'
@@ -27,6 +29,14 @@ export const router = createBrowserRouter([
       { path: '/', element: <HomePage /> },
       { path: '/shop', element: <ShopPage /> },
       { path: '/shop/:id', element: <ProductDetailPage /> },
+      {
+        path: '/orders',
+        element: (
+          <RequireAuth>
+            <OrdersPage />
+          </RequireAuth>
+        ),
+      },
       { path: '/sign-in', element: <SignInPage /> },
       { path: '/sign-up', element: <SignUpPage /> },
     ],

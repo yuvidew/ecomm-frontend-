@@ -142,8 +142,10 @@ export const NavBar = () => {
                   <FavoritesSheet />
                 </SheetContent>
               </Sheet>
-              <Button variant={"ghost"} className='bg-transparent! p-0' size={"icon"} >
-                <UserIcon/>
+              <Button asChild variant={"ghost"} className='bg-transparent! p-0' size={"icon"}>
+                <Link to="/orders" aria-label="My orders">
+                  <UserIcon/>
+                </Link>
               </Button>
               <Sheet>
                 <SheetTrigger asChild>
