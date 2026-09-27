@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
+import { StarRating } from '@/components/star-rating'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -7,11 +8,16 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Slider } from '@/components/ui/slider'
 import { useCategories } from '@/features/categories/hooks/use-categories'
 import { formatPrice } from '@/lib/format'
+import { Separator } from '@/components/ui/separator'
+
+// rating thresholds offered in the filter, highest first
+const RATING_THRESHOLDS = [4, 3, 2, 1]
 
 /**
- * ProductFilters — shop page sidebar content: category (single-select) and
- * price range (client-side, over the currently fetched batch). Rendered both
- * in the always-visible desktop sidebar and inside the mobile filters sheet.
+ * ProductFilters — shop page sidebar content: category (single-select),
+ * price range, and minimum rating (single-select) filters, all client-side
+ * over the currently fetched batch. Rendered both in the always-visible
+ * desktop sidebar and inside the mobile filters sheet.
  * @param priceBounds - `[min, max]` computed from the currently fetched product batch
  * @param isPriceLoading - true while the batch the price bounds come from is still loading
  */
@@ -26,6 +32,7 @@ export const ProductFilters = ({
   const { data: categories, isLoading: categoriesLoading } = useCategories()
 
   const selectedCategory = searchParams.get('category')
+  const selectedRating = searchParams.get('minRating')
   const [batchMin, batchMax] = priceBounds
   const minPrice = searchParams.has('minPrice') ? Number(searchParams.get('minPrice')) : batchMin
   const maxPrice = searchParams.has('maxPrice') ? Number(searchParams.get('maxPrice')) : batchMax
@@ -53,6 +60,18 @@ export const ProductFilters = ({
     setSearchParams(next)
   }
 
+  // toggles a rating threshold on (exclusively) or off, same as toggleCategory
+  const toggleRating = (rating: number) => {
+    const next = new URLSearchParams(searchParams)
+    if (selectedRating === String(rating)) {
+      next.delete('minRating')
+    } else {
+      next.set('minRating', String(rating))
+    }
+    next.delete('page')
+    setSearchParams(next)
+  }
+
   const commitPriceRange = ([min, max]: number[]) => {
     const next = new URLSearchParams(searchParams)
     if (min <= batchMin && max >= batchMax) {
@@ -68,13 +87,14 @@ export const ProductFilters = ({
 
   const clearAll = () => {
     const next = new URLSearchParams(searchParams)
-    for (const key of ['category', 'search', 'minPrice', 'maxPrice', 'page']) {
+    for (const key of ['category', 'search', 'minPrice', 'maxPrice', 'minRating', 'page']) {
       next.delete(key)
     }
     setSearchParams(next)
   }
 
-  const hasActiveFilters = searchParams.has('category') || searchParams.has('minPrice')
+  const hasActiveFilters =
+    searchParams.has('category') || searchParams.has('minPrice') || searchParams.has('minRating')
 
   return (
     <div className="flex flex-col gap-6">
@@ -91,7 +111,7 @@ export const ProductFilters = ({
         )}
       </div>
 
-      <div className="flex flex-col gap-3 border-b pb-6">
+      <div className="flex flex-col gap-3">
         <h3 className="text-sm font-semibold text-foreground">Category</h3>
         {categoriesLoading ? (
           <div className="flex flex-col gap-3">
@@ -117,6 +137,8 @@ export const ProductFilters = ({
         )}
       </div>
 
+      <Separator className='bg-primary'/>
+
       <div className="flex flex-col gap-3">
         <h3 className="text-sm font-semibold text-foreground">Price</h3>
         {isPriceLoading ? (
@@ -133,12 +155,33 @@ export const ProductFilters = ({
               disabled={batchMin === batchMax}
             />
             <div className="flex items-center gap-2">
-              <Input value={formatPrice(draftRange[0])} readOnly className="h-8 text-sm" />
+              <Input value={formatPrice(draftRange[0])} readOnly className="h-8 text-sm border-primary" />
               <span className="text-muted-foreground">-</span>
-              <Input value={formatPrice(draftRange[1])} readOnly className="h-8 text-sm" />
+              <Input value={formatPrice(draftRange[1])} readOnly className="h-8 text-sm border-primary" />
             </div>
           </div>
         )}
+      </div>
+
+      <Separator className='bg-primary'/>
+
+      <div className="flex flex-col gap-3">
+        <h3 className="text-sm font-semibold text-foreground">Rating</h3>
+        <div className="flex flex-col gap-3">
+          {RATING_THRESHOLDS.map((rating) => (
+            <div key={rating} className="flex items-center gap-2">
+              <Checkbox
+                id={`rating-${rating}`}
+                checked={selectedRating === String(rating)}
+                onCheckedChange={() => toggleRating(rating)}
+              />
+              <Label htmlFor={`rating-${rating}`} className="flex items-center gap-2 text-sm font-normal text-foreground">
+                <StarRating value={rating} size="size-4" />
+                & up
+              </Label>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

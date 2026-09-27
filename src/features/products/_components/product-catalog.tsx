@@ -30,11 +30,12 @@ const GRID_CLASSES = 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'
 
 /**
  * ProductCatalog — the shop page's filtered, paginated product grid. Owns
- * the `?page=&category=&search=&minPrice=&maxPrice=` URL state, fetches one
- * batch of up to `BATCH_LIMIT` products (server-filtered by category/search),
- * then filters that batch by price and paginates it client-side -- see
- * `.claude/plan/phase-13-shop-filters.md` for why price filtering can't be
- * done server-side. 
+ * the `?page=&category=&search=&minPrice=&maxPrice=&minRating=` URL state,
+ * fetches one batch of up to `BATCH_LIMIT` products (server-filtered by
+ * category/search), then filters that batch by price and rating and
+ * paginates it client-side -- see `.claude/plan/phase-13-shop-filters.md` for
+ * why price (and, by the same reasoning, rating) filtering can't be done
+ * server-side.
  */
 export const ProductCatalog = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -61,13 +62,14 @@ export const ProductCatalog = () => {
 
   const minPrice = searchParams.has('minPrice') ? Number(searchParams.get('minPrice')) : batchMin
   const maxPrice = searchParams.has('maxPrice') ? Number(searchParams.get('maxPrice')) : batchMax
+  const minRating = searchParams.has('minRating') ? Number(searchParams.get('minRating')) : 0
 
   const filtered = useMemo(
     () => batch.filter((product) => {
       const price = Number(product.price)
-      return price >= minPrice && price <= maxPrice
+      return price >= minPrice && price <= maxPrice && Number(product.avg_rating) >= minRating
     }),
-    [batch, minPrice, maxPrice],
+    [batch, minPrice, maxPrice, minRating],
   )
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
@@ -97,7 +99,7 @@ export const ProductCatalog = () => {
       </div>
 
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
-        <aside className="hidden overflow-hidden w-72 shrink-0 lg:sticky lg:top-28 lg:block lg:max-h-[calc(100svh-8rem)] lg:overflow-y-auto">
+        <aside className="hidden overflow-hidden w-72 shrink-0 lg:sticky lg:top-28 lg:block bg-accent p-4 rounded-md border  ">
           <ProductFilters priceBounds={[batchMin, batchMax]} isPriceLoading={isLoading} />
         </aside>
 

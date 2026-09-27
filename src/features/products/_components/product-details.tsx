@@ -35,7 +35,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
       <div className="flex flex-col gap-4">
         <AspectRatio ratio={1} className="overflow-hidden rounded-xl bg-muted">
           {mainImage ? (
-            <img src={mainImage} alt={product.name} className="size-full object-cover" />
+            <img src={mainImage} alt={product.name} className="size-full object-contain" />
           ) : (
             <div className="flex size-full items-center justify-center text-muted-foreground">
               <ImageIcon className="size-10" />
@@ -58,7 +58,7 @@ export const ProductDetails = ({ product }: { product: Product }) => {
                 )}
               >
                 <AspectRatio ratio={1}>
-                  <img src={url} alt="" className="size-full object-cover" />
+                  <img src={url} alt="" className="size-full object-contain" />
                 </AspectRatio>
               </button>
             ))}

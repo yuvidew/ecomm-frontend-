@@ -29,3 +29,15 @@ export const reviewKeys = {
   listByProduct: (productId: number, params: { page: number; limit: number }) =>
     [...reviewKeys.listsByProduct(productId), params] as const,
 }
+
+/** cartKeys — TanStack Query keys for the cart feature (single-user, unparameterized). */
+export const cartKeys = {
+  all: ['cart'] as const,
+  cart: () => [...cartKeys.all, 'detail'] as const,
+}
+
+/** favoriteKeys — TanStack Query keys for the favorites feature (single-user, unparameterized). */
+export const favoriteKeys = {
+  all: ['favorites'] as const,
+  list: () => [...favoriteKeys.all, 'list'] as const,
+}
