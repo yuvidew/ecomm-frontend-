@@ -2,8 +2,10 @@ import { createBrowserRouter } from 'react-router'
 import { RedirectIfRole } from '@/components/redirect-if-role'
 import { RequireAuth } from '@/components/require-auth'
 import AdminCategoriesPage from '@/pages/admin-categories-page'
+import AdminOrdersPage from '@/pages/admin-orders-page'
 import AdminProductDetailPage from '@/pages/admin-product-detail-page'
 import AdminProductsPage from '@/pages/admin-products-page'
+import CheckoutPage from '@/pages/checkout-page'
 import HomePage from '@/pages/home-page'
 import OrdersPage from '@/pages/orders-page'
 import ProductDetailPage from '@/pages/product-detail-page'
@@ -37,6 +39,14 @@ export const router = createBrowserRouter([
           </RequireAuth>
         ),
       },
+      {
+        path: '/checkout',
+        element: (
+          <RequireAuth>
+            <CheckoutPage />
+          </RequireAuth>
+        ),
+      },
       { path: '/sign-in', element: <SignInPage /> },
       { path: '/sign-up', element: <SignUpPage /> },
     ],
@@ -49,6 +59,7 @@ export const router = createBrowserRouter([
       { index: true, element: <AdminProductsPage /> },
       { path: 'products/:id', element: <AdminProductDetailPage /> },
       { path: 'categories', element: <AdminCategoriesPage /> },
+      { path: 'orders', element: <AdminOrdersPage /> },
     ],
   },
 ])

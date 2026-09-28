@@ -2,14 +2,16 @@ import { Badge } from '@/components/ui/badge'
 import type { OrderStatus } from '../types/orders'
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
-  processing: 'Processing',
+  pending: 'Pending',
+  paid: 'Paid',
   shipped: 'Shipped',
   delivered: 'Delivered',
   cancelled: 'Cancelled',
 }
 
 const STATUS_VARIANT: Record<OrderStatus, 'outline' | 'secondary' | 'default' | 'destructive'> = {
-  processing: 'outline',
+  pending: 'outline',
+  paid: 'secondary',
   shipped: 'secondary',
   delivered: 'default',
   cancelled: 'destructive',
