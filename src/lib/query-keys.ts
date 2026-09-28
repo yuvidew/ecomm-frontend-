@@ -41,3 +41,11 @@ export const favoriteKeys = {
   all: ['favorites'] as const,
   list: () => [...favoriteKeys.all, 'list'] as const,
 }
+
+/** orderKeys — TanStack Query keys for the orders feature. */
+export const orderKeys = {
+  all: ['orders'] as const,
+  lists: () => [...orderKeys.all, 'list'] as const,
+  mine: () => [...orderKeys.lists(), 'mine'] as const,
+  admin: () => [...orderKeys.lists(), 'admin'] as const,
+}

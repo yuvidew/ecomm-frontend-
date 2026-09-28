@@ -1,4 +1,5 @@
 import { ImageIcon, MinusIcon, PlusIcon, ShoppingBagIcon } from 'lucide-react'
+import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { QueryErrorAlert } from '@/components/query-error-alert'
 import { Badge } from '@/components/ui/badge'
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { Separator } from '@/components/ui/separator'
-import { SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { SheetClose, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatPrice } from '@/lib/format'
 import { getApiErrorMessage } from '@/lib/http'
@@ -156,18 +157,25 @@ export const CartSheet = () => {
             <span className="text-lg font-semibold tabular-nums">{formatPrice(cart.total)}</span>
           </div>
           <Separator className="mb-3" />
-          <Button
-            variant="outline"
-            className="w-full"
-            disabled={clearCart.isPending}
-            onClick={() =>
-              clearCart.mutate(undefined, {
-                onError: (error) => toast.error(getApiErrorMessage(error, 'Could not clear cart')),
-              })
-            }
-          >
-            Clear cart
-          </Button>
+          <div className="flex flex-col gap-2">
+            <SheetClose asChild>
+              <Button className="w-full" asChild>
+                <Link to="/checkout">Checkout</Link>
+              </Button>
+            </SheetClose>
+            <Button
+              variant="outline"
+              className="w-full"
+              disabled={clearCart.isPending}
+              onClick={() =>
+                clearCart.mutate(undefined, {
+                  onError: (error) => toast.error(getApiErrorMessage(error, 'Could not clear cart')),
+                })
+              }
+            >
+              Clear cart
+            </Button>
+          </div>
         </div>
       )}
     </div>

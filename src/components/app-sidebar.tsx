@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
 import { Link } from 'react-router'
-import { PackageIcon, StoreIcon, TagsIcon } from 'lucide-react'
+import { PackageIcon, ReceiptIcon, StoreIcon, TagsIcon } from 'lucide-react'
 import { NavMain, type NavMainItem } from '@/components/nav-main'
 import { NavUser } from '@/components/nav-user'
 import {
@@ -23,6 +23,7 @@ const ADMIN_NAV: NavMainItem[] = [
     activePrefix: '/admin/products',
   },
   { title: 'Categories', url: '/admin/categories', icon: <TagsIcon aria-hidden="true" /> },
+  { title: 'Orders', url: '/admin/orders', icon: <ReceiptIcon aria-hidden="true" /> },
 ]
 
 /**

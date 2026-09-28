@@ -1,14 +1,18 @@
 import { PackageIcon } from 'lucide-react'
 import { useState } from 'react'
+import { QueryErrorAlert } from '@/components/query-error-alert'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { MOCK_ORDERS } from './mock-orders'
+import { getApiErrorMessage } from '@/lib/http'
+import { useOrders } from '../hooks/use-orders'
 import { OrderCard } from './order-card'
 import type { OrderStatus } from '../types/orders'
 
 const STATUS_TABS: { value: 'all' | OrderStatus; label: string }[] = [
   { value: 'all', label: 'All' },
-  { value: 'processing', label: 'Processing' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'paid', label: 'Paid' },
   { value: 'shipped', label: 'Shipped' },
   { value: 'delivered', label: 'Delivered' },
   { value: 'cancelled', label: 'Cancelled' },
@@ -16,15 +20,14 @@ const STATUS_TABS: { value: 'all' | OrderStatus; label: string }[] = [
 
 /**
  * OrderList — "My Orders" view: status tabs filtering the order history,
- * a card per matching order, and an empty state when a filter has no matches.
- * Reads from MOCK_ORDERS placeholder data (.claude/plan/phase-18-my-orders-page.md)
- * until a real orders API/hook exists.
+ * a card per matching order, and loading/error/empty states.
  */
 export const OrderList = () => {
   const [statusFilter, setStatusFilter] = useState<'all' | OrderStatus>('all')
+  const { data: orders, isLoading, isError, error } = useOrders()
 
   const filteredOrders =
-    statusFilter === 'all' ? MOCK_ORDERS : MOCK_ORDERS.filter((order) => order.status === statusFilter)
+    statusFilter === 'all' ? orders : orders?.filter((order) => order.status === statusFilter)
 
   return (
     <div className="flex flex-col gap-6">
@@ -43,7 +46,15 @@ export const OrderList = () => {
         </TabsList>
       </Tabs>
 
-      {filteredOrders.length === 0 ? (
+      {isLoading ? (
+        <div className="flex flex-col gap-4">
+          {Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={index} className="h-40 w-full rounded-xl" />
+          ))}
+        </div>
+      ) : isError ? (
+        <QueryErrorAlert message={getApiErrorMessage(error, 'Could not load your orders')} />
+      ) : !filteredOrders?.length ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">

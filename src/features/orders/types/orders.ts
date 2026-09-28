@@ -1,24 +1,38 @@
-// Placeholder shapes for the UI-only "My Orders" phase (.claude/plan/phase-18-my-orders-page.md).
-// No backend orders endpoint exists yet -- reconcile these against the real GET /api/orders
-// contract (and confirm with the user) before adding an api/ or hooks/ layer for this feature.
-
 /** OrderStatus — lifecycle state of a placed order. */
-export type OrderStatus = 'processing' | 'shipped' | 'delivered' | 'cancelled'
+export type OrderStatus = 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled'
 
-/** OrderItem — one line item within an order. */
-export interface OrderItem {
-  id: string
-  name: string
-  image: string | null
+/** OrderItem — one line item within an order, as returned by every /api/orders endpoint. */
+export type OrderItem = {
+  id: number
+  order_id: number
+  product_id: number
   quantity: number
-  price: number
+  // MySQL DECIMAL — mysql2 serializes it as a string
+  price: string
+  name: string
+  slug: string
+  images: string[]
 }
 
-/** Order — a single placed order and its line items. */
-export interface Order {
-  id: string
-  placedAt: string
+/** Order — a single order and its line items. */
+export type Order = {
+  id: number
+  user_id: number
   status: OrderStatus
+  // MySQL DECIMAL — mysql2 serializes it as a string
+  total: string
+  shipping_address: string
+  created_at: string
+  updated_at: string
   items: OrderItem[]
-  total: number
+}
+
+/** PlaceOrderInput — body sent to POST /api/orders. */
+export type PlaceOrderInput = {
+  shippingAddress: string
+}
+
+/** UpdateOrderStatusInput — body sent to PATCH /api/orders/:orderId/status. */
+export type UpdateOrderStatusInput = {
+  status: OrderStatus
 }
