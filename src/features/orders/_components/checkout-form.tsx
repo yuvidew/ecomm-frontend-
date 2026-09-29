@@ -18,7 +18,7 @@ import { usePlaceOrder } from '../hooks/use-place-order'
 /**
  * CheckoutForm — order summary drawn from the current cart, a shipping
  * address field, and a "Place order" action that converts the cart into
- * an order (POST /api/orders) and redirects to "My Orders" on success.
+ * an order (POST /api/orders) and redirects to the payment page on success.
  */
 export const CheckoutForm = () => {
   const { data: cart, isLoading: isCartLoading } = useCart()
@@ -31,9 +31,9 @@ export const CheckoutForm = () => {
     mutate(
       { shippingAddress: shippingAddress.trim() },
       {
-        onSuccess: () => {
+        onSuccess: (order) => {
           toast.success('Order placed')
-          navigate('/orders')
+          navigate(`/orders/${order.id}/pay`)
         },
         onError: (error) => toast.error(getApiErrorMessage(error, 'Could not place order')),
       },

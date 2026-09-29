@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import { toast } from 'sonner'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Button } from '@/components/ui/button'
@@ -13,8 +14,8 @@ import type { Order } from '../types/orders'
 
 /**
  * OrderCard — one order as a card: id/date/status header, shipping address,
- * an expandable accordion listing its line items, the order total, and a
- * cancel action while the order is still pending.
+ * an expandable accordion listing its line items, the order total, and
+ * cancel/pay actions while the order is still pending.
  * @param order - order to render
  */
 export const OrderCard = ({ order }: { order: Order }) => {
@@ -62,10 +63,13 @@ export const OrderCard = ({ order }: { order: Order }) => {
       </CardContent>
 
       {order.status === 'pending' && (
-        <CardFooter className="justify-end">
+        <CardFooter className="justify-end gap-2">
           <Button variant="outline" size="sm" disabled={cancelOrder.isPending} onClick={handleCancel}>
             {cancelOrder.isPending && <Spinner />}
             Cancel order
+          </Button>
+          <Button size="sm" asChild>
+            <Link to={`/orders/${order.id}/pay`}>Pay now</Link>
           </Button>
         </CardFooter>
       )}

@@ -8,6 +8,7 @@ import AdminProductsPage from '@/pages/admin-products-page'
 import CheckoutPage from '@/pages/checkout-page'
 import HomePage from '@/pages/home-page'
 import OrdersPage from '@/pages/orders-page'
+import PayOrderPage from '@/pages/pay-order-page'
 import ProductDetailPage from '@/pages/product-detail-page'
 import ShopPage from '@/pages/shop-page'
 import SignInPage from '@/pages/sign-in-page'
@@ -44,6 +45,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth>
             <CheckoutPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/orders/:orderId/pay',
+        element: (
+          <RequireAuth>
+            <PayOrderPage />
           </RequireAuth>
         ),
       },
