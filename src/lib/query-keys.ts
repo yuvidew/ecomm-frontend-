@@ -49,3 +49,9 @@ export const orderKeys = {
   mine: () => [...orderKeys.lists(), 'mine'] as const,
   admin: () => [...orderKeys.lists(), 'admin'] as const,
 }
+
+/** paymentKeys — TanStack Query keys for the payments feature. */
+export const paymentKeys = {
+  all: ['payments'] as const,
+  byOrder: (orderId: number) => [...paymentKeys.all, 'order', orderId] as const,
+}

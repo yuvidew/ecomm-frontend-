@@ -1,10 +1,13 @@
 import { ReceiptIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { QueryErrorAlert } from '@/components/query-error-alert'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { PaymentHistory } from '@/features/payments/_components/payment-history'
 import { formatDate, formatPrice } from '@/lib/format'
 import { getApiErrorMessage } from '@/lib/http'
 import { useAllOrders } from '../hooks/use-all-orders'
@@ -47,8 +50,8 @@ const OrderStatusSelect = ({ order }: { order: Order }) => {
 
 /**
  * AdminOrdersTable — lists every order across all users (order id, customer,
- * status, total, placed date), with an inline status-update control, plus
- * loading, error, and empty states.
+ * status, total, placed date), with an inline status-update control, a dialog
+ * to view an order's payment attempt history, plus loading, error, and empty states.
  */
 export const AdminOrdersTable = () => {
   const { data: orders, isLoading, isError, error } = useAllOrders()
@@ -64,6 +67,7 @@ export const AdminOrdersTable = () => {
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Total</TableHead>
               <TableHead className="text-right">Placed</TableHead>
+              <TableHead className="text-right">Payments</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -83,6 +87,9 @@ export const AdminOrdersTable = () => {
                 </TableCell>
                 <TableCell className="text-right">
                   <Skeleton className="ml-auto h-4 w-20" />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Skeleton className="ml-auto h-8 w-20" />
                 </TableCell>
               </TableRow>
             ))}
@@ -119,6 +126,7 @@ export const AdminOrdersTable = () => {
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Total</TableHead>
             <TableHead className="text-right">Placed</TableHead>
+            <TableHead className="text-right">Payments</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -131,6 +139,21 @@ export const AdminOrdersTable = () => {
               </TableCell>
               <TableCell className="text-right tabular-nums">{formatPrice(order.total)}</TableCell>
               <TableCell className="text-right text-muted-foreground">{formatDate(order.created_at)}</TableCell>
+              <TableCell className="text-right">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Payments
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Payments for order #{order.id}</DialogTitle>
+                    </DialogHeader>
+                    <PaymentHistory orderId={order.id} />
+                  </DialogContent>
+                </Dialog>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
